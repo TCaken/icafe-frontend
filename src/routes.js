@@ -50,6 +50,7 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 // Users
 const Users = React.lazy(() => import('./views/users/Users'))
+const UserProfile = React.lazy(() => import('./views/users/UserProfile'))
 const CreateUser = React.lazy(() => import('./views/users/CreateUser'))
 const DeleteUser = React.lazy(() => import('./views/users/DeleteUser'))
 const UpdateUser = React.lazy(() => import('./views/users/UpdateUser'))
@@ -108,6 +109,7 @@ const routes = [
   { path: '/users/delete', name: 'Delete Users', element: DeleteUser },
   { path: '/users', name: 'Users', element: Users, exact: true },
   { path: '/users/linkcard', name: 'Link Card to Users', element: LinkCard },
+  { path: '/users/user', name: 'Profile', element: UserProfile },
 ]
 
 export default routes

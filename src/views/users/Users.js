@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import axios from 'axios'
 import {
   CTable,
@@ -10,6 +10,11 @@ import {
   CTableDataCell,
   CButton,
   CButtonGroup,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
   CToaster,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -22,7 +27,10 @@ const Users = (props) => {
   console.log('Authenticated: ', auth)
   const toaster = useRef()
 
-  const [users, setUsers] = React.useState([])
+  const [users, setUsers] = useState([])
+  const [userId, setUserId] = useState(null)
+  const [amount, setAmount] = useState(0)
+  const [amountModal, setAmountModal] = useState(false)
   const fetchUsers = async () => {
     try {
       const res = await axios.get(`http://localhost:4000/api/v1/users`)
@@ -35,14 +43,30 @@ const Users = (props) => {
     fetchUsers()
   }, [])
 
-  const handleDelete = async (userId) => {
+  const handleAdd = async (id) => {
+    console.log('Add')
+  }
+
+  const handleEdit = async (id) => {
+    console.log('Edit')
+  }
+
+  const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:4000/api/v1/users/${userId}`)
+      const response = await axios.delete(`http://localhost:4000/api/v1/users/${id}`)
       setToast(customToast(response.data.message))
       fetchUsers()
     } catch (error) {
       console.error('Error during delete:', error)
     }
+  }
+
+  const addAmount = async (id, amount) => {
+    console.log('Add amount to user')
+  }
+
+  const editUser = async (id, user) => {
+    console.log('Edit user information')
   }
 
   // const users = await axios.get(`http://localhost:4000/api/users/get-all`).then((res) => res.data)
@@ -53,6 +77,24 @@ const Users = (props) => {
   } else {
     return (
       <div>
+        <CModal
+          visible={amountModal}
+          onClose={() => setAmountModal(false)}
+          aria-labelledby="ModalAmount"
+        >
+          <CModalHeader onClose={() => setAmountModal(false)}>
+            <CModalTitle id="ModalAmountLabel">Add Amount </CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <p>Woohoo</p>
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="secondary" onClick={() => setAmountModal(false)}>
+              Close
+            </CButton>
+            <CButton color="primary">Add Amount</CButton>
+          </CModalFooter>
+        </CModal>
         <CTable className="mt-3 ms-0">
           <CTableHead>
             <CTableRow>
@@ -67,14 +109,22 @@ const Users = (props) => {
             {users.map((user) => (
               // eslint-disable-next-line react/jsx-key
               <CTableRow key={user.id}>
-                <CTableHeaderCell scope="row">{user.id}</CTableHeaderCell>
+                <CTableHeaderCell scope="row">
+                  <Link to="/users/user" state={user}>
+                    {user.name}
+                  </Link>
+                </CTableHeaderCell>
                 <CTableDataCell>{user.name}</CTableDataCell>
                 <CTableDataCell>{user.email}</CTableDataCell>
                 <CTableDataCell>{user.value}</CTableDataCell>
                 <CTableDataCell>
                   <CButtonGroup role="sm" aria-label="Default button group">
                     <CButton color="success" variant="outline">
-                      <CIcon icon={cilPlus} size="sm" />
+                      <CIcon
+                        icon={cilPlus}
+                        size="sm"
+                        onClick={() => setAmountModal(!amountModal)}
+                      />
                     </CButton>
                     <CButton color="warning" variant="outline">
                       <CIcon icon={cilPencil} size="sm" />
