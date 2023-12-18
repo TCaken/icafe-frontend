@@ -15,6 +15,9 @@ import {
   CModalTitle,
   CModalBody,
   CModalFooter,
+  CCol,
+  CForm,
+  CFormInput,
   CToaster,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -28,9 +31,18 @@ const Users = (props) => {
   const toaster = useRef()
 
   const [users, setUsers] = useState([])
-  const [userId, setUserId] = useState(null)
-  const [amount, setAmount] = useState(0)
-  const [amountModal, setAmountModal] = useState(false)
+  const [addBalanceModal, setAddBalanceModal] = useState(false)
+  const [editUserModal, setEditUserModal] = useState(false)
+  const [userData, setUserData] = useState({
+    id: '',
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    value: '',
+  })
+
   const fetchUsers = async () => {
     try {
       const res = await axios.get(`http://localhost:4000/api/v1/users`)
@@ -43,12 +55,85 @@ const Users = (props) => {
     fetchUsers()
   }, [])
 
-  const handleAdd = async (id) => {
-    console.log('Add')
+  const handleInputChange = (event) => {
+    const { id, value } = event.target
+    setUserData({
+      ...userData,
+      [id]: value,
+    })
   }
 
-  const handleEdit = async (id) => {
-    console.log('Edit')
+  const handleAddClick = (user) => {
+    setUserData({ ...userData, ...user })
+    console.log(userData)
+    setAddBalanceModal(!addBalanceModal)
+  }
+
+  const handleAdd = async (event) => {
+    event.preventDefault()
+    console.log(userData)
+
+    try {
+      // Send a POST request with userData & balance
+      const response = await axios.post(
+        `http://localhost:4000/api/v1/users/balance/${userData.id}`,
+        userData,
+      )
+      setToast(customToast(response.data.message))
+
+      // Reset the form data after successful submission
+      setUserData({
+        id: '',
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        value: '',
+      })
+    } catch (error) {
+      setToast(customToast(error))
+      console.error('Error add balance:', error)
+    }
+
+    fetchUsers()
+    setAddBalanceModal(false)
+  }
+
+  const handleEditClick = (user) => {
+    setUserData({ ...userData, ...user })
+    setEditUserModal(!editUserModal)
+  }
+
+  const handleEdit = async (event) => {
+    event.preventDefault()
+
+    //console.log(userData)
+    try {
+      // Send a PUT request with userData
+      const response = await axios.put(
+        `http://localhost:4000/api/v1/users/${userData.id}`,
+        userData,
+      )
+      setToast(customToast(response.data.message))
+
+      // Reset the form data after successful submission
+      setUserData({
+        id: '',
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        value: '',
+      })
+    } catch (error) {
+      setToast(customToast(error))
+      console.error('Error editing user:', error)
+    }
+
+    fetchUsers()
+    setEditUserModal(false)
   }
 
   const handleDelete = async (id) => {
@@ -61,40 +146,123 @@ const Users = (props) => {
     }
   }
 
-  const addAmount = async (id, amount) => {
-    console.log('Add amount to user')
-  }
-
-  const editUser = async (id, user) => {
-    console.log('Edit user information')
-  }
-
-  // const users = await axios.get(`http://localhost:4000/api/users/get-all`).then((res) => res.data)
-  console.log(users)
-
   if (!auth) {
     return <Navigate replace to="/login" />
   } else {
     return (
       <div>
+        {/* Add User Balance Modal */}
         <CModal
-          visible={amountModal}
-          onClose={() => setAmountModal(false)}
-          aria-labelledby="ModalAmount"
+          visible={addBalanceModal}
+          onClose={() => setAddBalanceModal(false)}
+          aria-labelledby="ModalAddBalance"
         >
-          <CModalHeader onClose={() => setAmountModal(false)}>
-            <CModalTitle id="ModalAmountLabel">Add Amount </CModalTitle>
+          <CModalHeader
+            onClose={() => {
+              setAddBalanceModal(false)
+            }}
+          >
+            <CModalTitle id="ModalAddAmountLabel">Add Balance</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <p>Woohoo</p>
+            <CForm className="row g-3 needs-validation">
+              <CCol md={12}>
+                <CFormInput
+                  type="number"
+                  value={userData.value}
+                  onChange={handleInputChange}
+                  id="value"
+                  label="Value"
+                />
+              </CCol>
+            </CForm>
           </CModalBody>
           <CModalFooter>
-            <CButton color="secondary" onClick={() => setAmountModal(false)}>
-              Close
+            <CButton color="secondary" onClick={() => setAddBalanceModal(false)}>
+              Discard
             </CButton>
-            <CButton color="primary">Add Amount</CButton>
+            <CButton color="primary" onClick={handleAdd}>
+              Apply
+            </CButton>
           </CModalFooter>
         </CModal>
+
+        {/* Edit user modal  */}
+        <CModal
+          visible={editUserModal}
+          onClose={() => setEditUserModal(false)}
+          aria-labelledby="ModalEditUser"
+        >
+          <CModalHeader
+            onClose={() => {
+              setEditUserModal(false)
+            }}
+          >
+            <CModalTitle id="ModalEditUserAmount">Edit Account Information</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <CForm className="row g-3 needs-validation" onSubmit={handleEdit}>
+              <CCol md={6}>
+                <CFormInput type="text" value={userData.id} id="id" label="Id" disabled />
+                <CFormInput
+                  type="text"
+                  placeholder="John Doe"
+                  value={userData.name}
+                  onChange={handleInputChange}
+                  id="name"
+                  label="Name"
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormInput
+                  type="text"
+                  placeholder="John"
+                  value={userData.username}
+                  onChange={handleInputChange}
+                  id="username"
+                  label="Username"
+                />
+              </CCol>
+              <CCol md={12}>
+                <CFormInput
+                  type="email"
+                  placeholder="johndoe@gmail.com"
+                  value={userData.email}
+                  onChange={handleInputChange}
+                  id="email"
+                  label="Email"
+                />
+              </CCol>
+              <CCol md={12}>
+                <CFormInput
+                  type="password"
+                  value={userData.password}
+                  id="password"
+                  label="Password"
+                  disabled
+                />
+              </CCol>
+              <CCol md={12}>
+                <CFormInput
+                  type="password"
+                  value={userData.confirm_password}
+                  id="confirm_password"
+                  label="Confirm Password"
+                  disabled
+                />
+              </CCol>
+            </CForm>
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="secondary" onClick={() => setEditUserModal(false)}>
+              Discard
+            </CButton>
+            <CButton color="primary" onClick={handleEdit}>
+              Apply
+            </CButton>
+          </CModalFooter>
+        </CModal>
+
         <CTable className="mt-3 ms-0">
           <CTableHead>
             <CTableRow>
@@ -109,24 +277,24 @@ const Users = (props) => {
             {users.map((user) => (
               // eslint-disable-next-line react/jsx-key
               <CTableRow key={user.id}>
-                <CTableHeaderCell scope="row">
+                <CTableHeaderCell scope="row">{user.id}</CTableHeaderCell>
+                <CTableDataCell>
                   <Link to="/users/user" state={user}>
                     {user.name}
                   </Link>
-                </CTableHeaderCell>
-                <CTableDataCell>{user.name}</CTableDataCell>
+                </CTableDataCell>
                 <CTableDataCell>{user.email}</CTableDataCell>
                 <CTableDataCell>{user.value}</CTableDataCell>
                 <CTableDataCell>
                   <CButtonGroup role="sm" aria-label="Default button group">
-                    <CButton color="success" variant="outline">
-                      <CIcon
-                        icon={cilPlus}
-                        size="sm"
-                        onClick={() => setAmountModal(!amountModal)}
-                      />
+                    <CButton color="success" variant="outline" onClick={() => handleAddClick(user)}>
+                      <CIcon icon={cilPlus} size="sm" />
                     </CButton>
-                    <CButton color="warning" variant="outline">
+                    <CButton
+                      color="warning"
+                      variant="outline"
+                      onClick={() => handleEditClick(user)}
+                    >
                       <CIcon icon={cilPencil} size="sm" />
                     </CButton>
                     <CButton color="danger" variant="outline" onClick={() => handleDelete(user.id)}>
