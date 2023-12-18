@@ -80,24 +80,23 @@ const Users = (props) => {
         userData,
       )
       setToast(customToast(response.data.message))
-
-      // Reset the form data after successful submission
-      setUserData({
-        id: '',
-        name: '',
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        value: '',
-      })
     } catch (error) {
       setToast(customToast(error))
       console.error('Error add balance:', error)
     }
 
+    // Reset the form data after successful submission
     fetchUsers()
     setAddBalanceModal(false)
+    setUserData({
+      id: '',
+      name: '',
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      value: '',
+    })
   }
 
   const handleEditClick = (user) => {
@@ -116,24 +115,23 @@ const Users = (props) => {
         userData,
       )
       setToast(customToast(response.data.message))
-
-      // Reset the form data after successful submission
-      setUserData({
-        id: '',
-        name: '',
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        value: '',
-      })
     } catch (error) {
       setToast(customToast(error))
       console.error('Error editing user:', error)
     }
 
+    // Reset the form data after successful submission
     fetchUsers()
     setEditUserModal(false)
+    setUserData({
+      id: '',
+      name: '',
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      value: '',
+    })
   }
 
   const handleDelete = async (id) => {
@@ -206,17 +204,15 @@ const Users = (props) => {
                 <CFormInput type="text" value={userData.id} id="id" label="Id" disabled />
                 <CFormInput
                   type="text"
-                  placeholder="John Doe"
                   value={userData.name}
                   onChange={handleInputChange}
                   id="name"
                   label="Name"
                 />
               </CCol>
-              <CCol md={6}>
+              <CCol md={12}>
                 <CFormInput
                   type="text"
-                  placeholder="John"
                   value={userData.username}
                   onChange={handleInputChange}
                   id="username"
@@ -226,7 +222,6 @@ const Users = (props) => {
               <CCol md={12}>
                 <CFormInput
                   type="email"
-                  placeholder="johndoe@gmail.com"
                   value={userData.email}
                   onChange={handleInputChange}
                   id="email"
