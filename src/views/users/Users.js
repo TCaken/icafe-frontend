@@ -21,7 +21,7 @@ import {
   CToaster,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilPencil, cilPlus, cilTrash } from '@coreui/icons'
+import { cilCaretTop, cilCaretBottom, cilPencil, cilPlus, cilTrash } from '@coreui/icons'
 import customToast from 'src/custom/toast/Toast'
 
 const Users = (props) => {
@@ -31,6 +31,8 @@ const Users = (props) => {
   const toaster = useRef()
 
   const [users, setUsers] = useState([])
+  const [sortBy, setSortBy] = useState('id')
+  const [sortOrder, setSortOrder] = useState('asc')
   const [addBalanceModal, setAddBalanceModal] = useState(false)
   const [editUserModal, setEditUserModal] = useState(false)
   const [userData, setUserData] = useState({
@@ -45,15 +47,18 @@ const Users = (props) => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(`http://localhost:4000/api/v1/users`)
+      const res = await axios.get(`http://localhost:4000/api/v1/users`, {
+        params: { sortBy, sortOrder },
+      })
       setUsers(res.data)
     } catch (err) {
       console.log(err)
     }
   }
+
   React.useEffect(() => {
     fetchUsers()
-  }, [])
+  }, [sortBy, sortOrder])
 
   const handleInputChange = (event) => {
     const { id, value } = event.target
@@ -141,6 +146,18 @@ const Users = (props) => {
       fetchUsers()
     } catch (error) {
       console.error('Error during delete:', error)
+    }
+  }
+
+  // Add a function to handle column header clicks
+  const handleSort = (column) => {
+    // If the same column is clicked, toggle the sort order
+    if (sortBy === column) {
+      setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'))
+    } else {
+      // If a different column is clicked, set it as the new sort column with 'asc' order
+      setSortBy(column)
+      setSortOrder('asc')
     }
   }
 
@@ -261,10 +278,40 @@ const Users = (props) => {
         <CTable className="mt-3 ms-0">
           <CTableHead>
             <CTableRow>
-              <CTableHeaderCell scope="col">Id</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Amount</CTableHeaderCell>
+              <CTableHeaderCell scope="col">
+                <div onClick={() => handleSort('id')}>
+                  Id{' '}
+                  <CIcon
+                    icon={sortBy === 'id' && sortOrder === 'desc' ? cilCaretBottom : cilCaretTop}
+                  />
+                </div>
+              </CTableHeaderCell>
+              <CTableHeaderCell scope="col">
+                <div onClick={() => handleSort('name')}>
+                  Name{' '}
+                  <CIcon
+                    icon={sortBy === 'name' && sortOrder === 'desc' ? cilCaretBottom : cilCaretTop}
+                  />
+                </div>
+              </CTableHeaderCell>
+              <CTableHeaderCell scope="col">
+                <div onClick={() => handleSort('email')}>
+                  Email{' '}
+                  <CIcon
+                    icon={sortBy === 'email' && sortOrder === 'desc' ? cilCaretBottom : cilCaretTop}
+                  />
+                </div>
+              </CTableHeaderCell>
+              <CTableHeaderCell scope="col">
+                <div onClick={() => handleSort('amount')}>
+                  Amount{' '}
+                  <CIcon
+                    icon={
+                      sortBy === 'amount' && sortOrder === 'desc' ? cilCaretBottom : cilCaretTop
+                    }
+                  />
+                </div>
+              </CTableHeaderCell>
               <CTableHeaderCell scope="col">Action</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
