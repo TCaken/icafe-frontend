@@ -44,16 +44,6 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Delete User',
-        to: '/users/delete',
-      },
-      {
-        component: CNavItem,
-        name: 'Update Users',
-        to: '/users/update',
-      },
-      {
-        component: CNavItem,
         name: 'Link Card',
         to: '/users/linkcard',
       },

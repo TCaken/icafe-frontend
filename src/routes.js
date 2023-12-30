@@ -52,8 +52,8 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Users = React.lazy(() => import('./views/users/Users'))
 const UserProfile = React.lazy(() => import('./views/users/UserProfile'))
 const CreateUser = React.lazy(() => import('./views/users/CreateUser'))
-const DeleteUser = React.lazy(() => import('./views/users/DeleteUser'))
-const UpdateUser = React.lazy(() => import('./views/users/UpdateUser'))
+// const DeleteUser = React.lazy(() => import('./views/users/DeleteUser'))
+// const UpdateUser = React.lazy(() => import('./views/users/UpdateUser'))
 const LinkCard = React.lazy(() => import('./views/users/LinkCard'))
 //const DeleteUser
 
@@ -105,8 +105,6 @@ const routes = [
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
   { path: '/users/create', name: 'Create Users', element: CreateUser },
-  { path: '/users/update', name: 'Update Users', element: UpdateUser },
-  { path: '/users/delete', name: 'Delete Users', element: DeleteUser },
   { path: '/users', name: 'Users', element: Users, exact: true },
   { path: '/users/linkcard', name: 'Link Card to Users', element: LinkCard },
   { path: '/users/user', name: 'Profile', element: UserProfile },

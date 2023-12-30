@@ -24,12 +24,15 @@ function createWindow() {
     },
   })
 
-  const reactURL =
-    process.env.NODE_ENV === 'development'
-      ? process.env.ELECTRON_START_URL
-      : `file://${path.join(__dirname, 'build', 'index.html')}`
+  const startUrl =
+    process.env.ELECTRON_START_URL ||
+    url.format({
+      pathname: path.join(__dirname, '../build/index.html'),
+      protocol: 'file:',
+      slashes: true,
+    })
 
-  mainWindow.loadURL(reactURL)
+  mainWindow.loadURL(startUrl)
 
   mainWindow.on('closed', function () {
     mainWindow = null
