@@ -2,7 +2,18 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const url = require('url')
 
+require('dotenv').config()
+
 let mainWindow
+
+if (process.env.ELECTRON_START_URL) {
+  console.log('The ELECTRON_START_URL environment variable exists!')
+} else {
+  console.log('The ELECTRON_START_URL environment variable does not exist.')
+}
+
+// I want to use React in Electron, so I need to load the React app
+// from a URL. The URL is different in development and production.
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -13,15 +24,12 @@ function createWindow() {
     },
   })
 
-  const startUrl =
-    'http://localhost:3000' ||
-    url.format({
-      pathname: path.join(__dirname, '/build/index.html'), // Adjust the path based on your project structure
-      protocol: 'file:',
-      slashes: true,
-    })
+  const reactURL =
+    process.env.NODE_ENV === 'development'
+      ? process.env.ELECTRON_START_URL
+      : `file://${path.join(__dirname, 'build', 'index.html')}`
 
-  mainWindow.loadURL(startUrl)
+  mainWindow.loadURL(reactURL)
 
   mainWindow.on('closed', function () {
     mainWindow = null
@@ -30,10 +38,19 @@ function createWindow() {
 
 app.on('ready', createWindow)
 
+// Quit when all windows are closed.
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit()
+  // On OS X it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 })
 
 app.on('activate', function () {
-  if (mainWindow === null) createWindow()
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow()
+  }
 })
