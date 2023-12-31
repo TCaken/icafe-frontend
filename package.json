@@ -1,9 +1,8 @@
 {
   "name": "icafe-admin",
   "version": "0.1.0",
-  "description": "Aplha test build for ICafe",
+  "description": "Alpha test build for ICafe",
   "homepage": ".",
-  "main": "main.js",
   "bugs": {
     "url": "https://github.com/coreui/coreui-free-react-admin-template/issues"
   },
@@ -14,18 +13,14 @@
   "license": "MIT",
   "author": "The CoreUI Team (https://github.com/orgs/coreui/people)",
   "scripts": {
-    "start": "concurrently \"npm run start-react\" \"wait-on http://localhost:3000  && npm run start-electron\"",
-    "start-electron": "electron main.js",
-    "start-react": "cross-env NODE_ENV=development react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "lint": "eslint \"src/**/*.js\"",
     "lint-fix": "eslint \"src/**/*.js\" --fix",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
-    "test:debug": "react-scripts --inspect-brk test --runInBand",
-    "postinstall": "electron-builder install-app-deps",
-    "dist": "electron-builder"
+    "test:debug": "react-scripts --inspect-brk test --runInBand"
   },
   "dependencies": {
     "@coreui/chartjs": "^3.1.2",
@@ -54,10 +49,6 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
-    "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
-    "electron": "^28.0.0",
-    "electron-builder": "^24.9.1",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "2.8.8",
@@ -65,31 +56,5 @@
     "sass": "^1.63.6",
     "wait-on": "^7.2.0",
     "web-vitals": "^3.3.2"
-  },
-  "build": {
-    "appId": "com.example.icafe",
-    "productName": "ICafe",
-    "win": {
-      "target": "nsis"
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ]
-    },
-    "files": [
-      "build/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ],
-    "directories": {
-      "output": "dist",
-      "buildResources": "assets"
-    }
-  },
-  "engines": {
-    "node": ">=10",
-    "npm": ">=6"
   }
 }
